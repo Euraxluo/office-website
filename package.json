@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:proxy": "python3 scripts/proxy_dev.py",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

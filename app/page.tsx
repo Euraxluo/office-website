@@ -57,12 +57,12 @@ function HomeContent() {
         }
       }
       const { id } = await server.open(file);
-      router.push(`/editor`);
+      router.push(`/editor?mode=edit`);
     },
     [router, server],
   );
 
-  const getNewUrl = (type: string) => `/editor?new=${type}`;
+  const getNewUrl = (type: string) => `/editor?new=${type}&mode=edit`;
 
   return (
     <div

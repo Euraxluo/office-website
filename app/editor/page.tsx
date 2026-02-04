@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useLayoutEffect, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAppStore, useResolvedLanguage } from "@/store";
 import { getDocumentType } from "@/utils/editor/utils";
 import io, { MockSocket } from "@/utils/editor/socket";
@@ -10,6 +11,13 @@ import { DocEditor } from "@/utils/editor/types";
 const APP_ROOT = "/v9.3.0.24-1";
 
 export default function Page({ params }: { params: Promise<{}> }) {
+  const searchParams = useSearchParams();
+  const fileId = searchParams.get("fileId");
+  const newDoc = searchParams.get("new");
+  const modeParam = searchParams.get("mode");
+  const isEdit = modeParam === "edit";
+  const mode = isEdit ? "edit" : "view";
+
   const server = useAppStore((state) => state.server);
   const language = useResolvedLanguage();
   const theme = useAppStore((state) => state.theme);
@@ -30,10 +38,6 @@ export default function Page({ params }: { params: Promise<{}> }) {
 
   useLayoutEffect(() => {
     const apiUrl = APP_ROOT + "/web-apps/apps/api/documents/api.js";
-    const searchParams = new URLSearchParams(window.location.search);
-
-    const fileId = searchParams.get("fileId");
-    const newDoc = searchParams.get("new");
 
     if (!fileId && newDoc) {
       server.openNew(newDoc);
@@ -42,7 +46,7 @@ export default function Page({ params }: { params: Promise<{}> }) {
     const doc = server.getDocument();
     const user = server.getUser();
     const documentType = getDocumentType(doc.fileType);
-    console.log("editor: ", doc, user, documentType);
+    console.log("editor: ", doc, user, documentType, "mode:", mode);
 
     let editor: DocEditor | null = null;
 
@@ -91,49 +95,42 @@ export default function Page({ params }: { params: Promise<{}> }) {
           url: doc.url,
 
           permissions: {
-            // TODO: fix PDF edit
-            edit: doc.fileType != "pdf",
+            edit: isEdit,
             chat: false,
-            rename: true,
-            protect: true,
+            rename: false,
+            protect: false,
             review: false,
-            // TODO: fix export to PDF
+            download: false,
             print: false,
           },
         },
         documentType: documentType,
         editorConfig: {
           lang: language,
-          // canCoAuthoring: true,
-          // type: "desktop",
-          coEditing: {
-            mode: "fast",
-            change: false, // disable user switching to real-time mode
-          },
+          mode: mode, // 切换 view 还是 编辑模式
           user: {
             ...user,
           },
-
-          // callbackUrl: "https://example.com/url-to-callback.ashx",
           customization: {
-            // help: false,
-            // about: false,
-            // hideRightMenu: true,
+            comments: isEdit, // 编辑模式才有
+            hideRightMenu: !isEdit, // 编辑模式才有 (false in edit, true in view)
+            compactHeader: !isEdit, // 是否展示紧凑模式 (false in edit, true in view)
+            compactToolbar: !isEdit, // 是否展示紧凑工具栏 (false in edit, true in view)
+            forcesave: false, // 是否强制保存,编辑模式才有
+            help: false,
+            canCoAuthoring: false,
             uiTheme: theme,
             features: {
               spellcheck: {
                 change: false,
               },
             },
-            // anonymous: {
-            //   request: false,
-            //   label: "Guest",
-            // },
+            anonymous: {
+              request: false,
+              label: "Guest",
+            },
             logo: {
-              image: location.origin + "/logo-name_black.svg",
-              imageDark: location.origin + "/logo-name_white.svg",
-              url: location.origin,
-              // visible: false,
+              visible: false,
             },
           },
         },
@@ -218,7 +215,7 @@ export default function Page({ params }: { params: Promise<{}> }) {
       MockSocket.off("disconnect", server.handleDisconnect);
       editor?.destroyEditor?.();
     };
-  }, []);
+  }, [fileId, newDoc, mode]);
 
   return (
     <div>

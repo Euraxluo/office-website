@@ -31,8 +31,8 @@ export class EditorServer {
   private socket: MockSocket | null = null;
   private sessionId: string = "session-id";
   private user: User = {
-    id: "uid",
-    name: "Me",
+    id: randomId(),
+    name: "User_" + randomId(),
   };
   private participants: Participant[] = [];
   private syncChangesIndex = 0;

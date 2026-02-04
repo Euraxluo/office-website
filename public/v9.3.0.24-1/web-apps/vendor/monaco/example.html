@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <base href="https://office-editor.ziziyi.com/v9.3.0.24-1/web-apps/vendor/monaco/">
+    <base href="/v9.3.0.24-1/web-apps/vendor/monaco/">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Example</title>
@@ -17,6 +18,7 @@
             left: 0;
             right: 0;
         }
+
         #iframeEditor {
             margin: 0;
             position: absolute;
@@ -25,6 +27,7 @@
             left: 30%;
             right: 0;
         }
+
         #editorLog {
             margin: 0;
             position: absolute;
@@ -42,43 +45,45 @@
         }
     </style>
 </head>
+
 <body>
     <div id="editorLog"></div>
     <div id="iframeEditor"></div>
-<script type="text/javascript" src="MonacoEditor.js"></script>
-<script type="text/javascript" language="javascript">
+    <script type="text/javascript" src="MonacoEditor.js"></script>
+    <script type="text/javascript" language="javascript">
 
-    var monacoEditor;
+        var monacoEditor;
 
-    var onChangeValue = function (event) {
-        document.getElementById('editorLog').innerText = event.data ? event.data.value : '';
-        console.log("onChangeValue at position(" + event.data.pos.row + ", " + event.data.pos.column + ")");
-    };
+        var onChangeValue = function (event) {
+            document.getElementById('editorLog').innerText = event.data ? event.data.value : '';
+            console.log("onChangeValue at position(" + event.data.pos.row + ", " + event.data.pos.column + ")");
+        };
 
-    var onLoad = function (event) {
-        console.log("onLoad");
-    };
+        var onLoad = function (event) {
+            console.log("onLoad");
+        };
 
-    var onEditorReady = function (event) {
-        console.log("onEditorReady");
-        monacoEditor.setValue('//Welcome!\n', {row: 2, column: 3});
-        monacoEditor.disableDrop(true);
-        monacoEditor.updateTheme('dark');
-    };
+        var onEditorReady = function (event) {
+            console.log("onEditorReady");
+            monacoEditor.setValue('//Welcome!\n', { row: 2, column: 3 });
+            monacoEditor.disableDrop(true);
+            monacoEditor.updateTheme('dark');
+        };
 
-    var config = {
-        editorType: 'word',
-        theme: 'light',
-        language: 'javascript',
-        value: '',
-        events: {
-            onChangeValue: onChangeValue,
-            onEditorReady: onEditorReady,
-            onLoad: onLoad
-        }
-    };
+        var config = {
+            editorType: 'word',
+            theme: 'light',
+            language: 'javascript',
+            value: '',
+            events: {
+                onChangeValue: onChangeValue,
+                onEditorReady: onEditorReady,
+                onLoad: onLoad
+            }
+        };
 
-    monacoEditor = new window.MonacoEditorWrapper("iframeEditor", config);
-</script>
+        monacoEditor = new window.MonacoEditorWrapper("iframeEditor", config);
+    </script>
 </body>
+
 </html>
